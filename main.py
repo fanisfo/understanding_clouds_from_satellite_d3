@@ -16,7 +16,8 @@ label_dict = {
 
 
 train_transform = transforms.Compose([
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    transforms.Resize((350,525))
 ])
 
 # Initialize dataset
@@ -26,7 +27,7 @@ train_dataset = LoadData(label_dict = label_dict, transformer = train_transform)
 train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True, num_workers=4)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = UNetMultiClass(in_channels=3, out_channels=1+len(label_dict)).to(device)
+model = UNetMultiClass(out_channels=1+len(label_dict)).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 

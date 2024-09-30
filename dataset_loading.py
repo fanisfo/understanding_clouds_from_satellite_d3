@@ -50,6 +50,6 @@ class LoadData():
 
         if self.transformer:
             image = self.transformer(image)
-            mask = self.transformer(mask_np)
+            mask = self.transformer(Image.fromarray(mask_np))
 
         return image, mask

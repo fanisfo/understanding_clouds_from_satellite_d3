@@ -36,11 +36,11 @@ dice_loss_fn = DiceLoss(label_dict)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 # Number of epochs
-num_epochs = 10  # Adjust based on your needs
+num_epochs = 10
 
 # Training loop
 for epoch in range(num_epochs):
-    model.train()  # Set the model to training mode
+    model.train()
     running_loss = 0.0
     
     for images, masks in train_loader:
@@ -57,6 +57,7 @@ for epoch in range(num_epochs):
         # Calculate loss
         # loss = criterion(outputs, masks)
         loss = dice_loss_fn(outputs, masks)
+        print(loss)
 
         # Backward pass and optimization
         loss.backward()

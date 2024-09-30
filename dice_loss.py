@@ -15,7 +15,7 @@ class DiceLoss(nn.Module):
         dice_loss = 0
         for i in range(num_classes):
             pred_class = predictions[:, i, :, :]
-            target_class = torch.where(target == i, torch.tensor(1), torch.tensor(0))
+            target_class = torch.where(target == i+1, torch.tensor(1), torch.tensor(0))
             
             intersection = torch.sum(pred_class * target_class)
             pred_sum = torch.sum(pred_class)

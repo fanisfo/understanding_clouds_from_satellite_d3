@@ -16,54 +16,69 @@ label_dict = {
     "Sugar":4
 }
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+model = UNetMultiClass(out_channels=len(label_dict)).to(device)
+dice_loss_fn = DiceLoss(label_dict)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+
+num_epochs = 5
+
+# Training
 train_transform = transforms.Compose([
     transforms.Resize((350, 525)),
     transforms.ToTensor()
 ])
 
-# Initialize dataset
-train_dataset = LoadData(label_dict = label_dict, transformer = train_transform)
+train_dataset = LoadData(
+    label_dict = label_dict, 
+    transformer = train_transform, 
+    images_dir = 'understanding_cloud_organization/train_images',
+    mask_csv_path="understanding_cloud_organization/train.csv")
 
-# Create DataLoader
 train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-model = UNetMultiClass(out_channels=len(label_dict)).to(device)
-# criterion = nn.CrossEntropyLoss()
-dice_loss_fn = DiceLoss(label_dict)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
-
-# Number of epochs
-num_epochs = 10
-
-# Training loop
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
     
     for images, masks in train_loader:
-        # Move data to device
         images = images.to(device)
         masks = masks.to(device)
 
-        # Zero the parameter gradients
         optimizer.zero_grad()
 
-        # Forward pass
         outputs = model(images)
 
-        # Calculate loss
-        # loss = criterion(outputs, masks)
         loss = dice_loss_fn(outputs, masks)
         print(loss)
 
-        # Backward pass and optimization
         loss.backward()
         optimizer.step()
 
         running_loss += loss.item()
-
-    # Print loss for the epoch
     print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {running_loss / len(train_loader):.4f}')
+
+# Testing
+test_transform = transforms.Compose([
+    transforms.Resize((350, 525)),
+    transforms.ToTensor()
+])
+
+test_dataset = LoadData(
+    label_dict = label_dict,
+    transformer = None,
+    images_dir = 'understanding_cloud_organization/test_images'
+)
+test_loader = DataLoader(test_dataset, batch_size=8, shuffle=True)
+
+model.eval()
+
+for images, _ in test_loader:
+    images = images.to(device)
+    masks = masks.to(device)
+
+    outputs = model(images)  
+    
+
+

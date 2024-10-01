@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,6 +10,7 @@ from segmentation_models_pytorch import Unet
 from dataset_loading import LoadData
 from unetmcl import UNetMultiClass
 from dice_loss import DiceLoss
+from utils import *
 
 label_dict = {
     "Fish": 1,
@@ -42,13 +45,13 @@ for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
     
-    for images, masks in train_loader:
+    for images, masks, _ in train_loader:
         images = images.to(device)
         masks = masks.to(device)
 
         optimizer.zero_grad()
 
-        outputs = model(images)
+        outputs = model(images) #torch.Size([8, 4, 350, 525])
 
         loss = dice_loss_fn(outputs, masks)
         print(loss)
@@ -74,11 +77,29 @@ test_loader = DataLoader(test_dataset, batch_size=8, shuffle=True)
 
 model.eval()
 
-for images, _ in test_loader:
+df_result = pd.DataFrame(columns=["Image_Label","EncodedPixels"])
+
+for images, _, img_names in test_loader:
     images = images.to(device)
     masks = masks.to(device)
 
     outputs = model(images)  
     
+    for i in outputs.shape[0]:
+        for j in outputs.shape[1]:
+            output = outputs[i,j,:,:]
+            fl_output = output.view(-1, 1)
+            result = pixel_encoder(fl_output)
+            df_result = df_result.append({"Image_Label": f"{img_names[i]}_{label_dict[j]}", "EncodedPixels": result}, ignore_index=True)
+
+df_result.to_csv("understanding_cloud_organization/test_result.csv")
+    
+            
+
+
+
+
+    
+
 
 

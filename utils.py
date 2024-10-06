@@ -12,4 +12,4 @@ def pixel_encoder(fl_output):
     result = []
     for start, end in zip(start_indices, end_indices):
         result.extend([start, end-start+1])
-    return result
+    return result 

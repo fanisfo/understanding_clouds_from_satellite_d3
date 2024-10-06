@@ -59,12 +59,12 @@ class UNetMultiClass(nn.Module):
         dec3 = self.dec3(dec3)
 
         dec2 = self.dec2(F.max_pool2d(dec3, kernel_size=2))
-        dec2 = dec2[:, :, :, :262]
+        # dec2 = dec2[:, :, :, :262]
         dec2 = torch.cat((dec2, enc2), dim=1)
         dec2 = self.dec2(dec2)
 
         dec1 = self.dec1(F.max_pool2d(dec2, kernel_size=2))
-        dec1 = dec1[:, :, :350, :]
+        # dec1 = dec1[:, :, :350, :]
         dec1 = torch.cat((dec1, enc1), dim=1)
         dec1 = self.dec1(dec1)
 

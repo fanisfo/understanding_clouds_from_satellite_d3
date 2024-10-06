@@ -92,7 +92,7 @@ for images, _, img_names in test_loader:
             result = pixel_encoder(fl_output)
             df_result = df_result.append({"Image_Label": f"{img_names[i]}_{label_dict[j]}", "EncodedPixels": result}, ignore_index=True)
 
-df_result.to_csv("understanding_cloud_organization/test_result.csv")
+df_result.to_csv("understanding_cloud_organization/test_result.csv") 
     
             
 

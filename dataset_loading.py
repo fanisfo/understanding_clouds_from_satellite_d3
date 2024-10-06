@@ -57,4 +57,4 @@ class LoadData():
             else:
                 mask = None
 
-        return image, mask, img_namejpg
+        return image, mask, img_namejpg 

@@ -24,4 +24,4 @@ class DiceLoss(nn.Module):
             dice_score = (2 * intersection) / (pred_sum + target_sum)
             dice_loss += 1 - dice_score
 
-        return dice_loss / num_classes 
+        return dice_loss / num_classes  
